@@ -16,8 +16,7 @@ corners1 = temp.selectStrongest(strong_num);
 temp = detectFASTFeatures(I2);
 corners2 = temp.selectStrongest(strong_num);
 [Descriptor2] = Brief_Descriptor(I2,flipud(corners2.Location'));
-
-% matches = findmatches(Descriptor1', Descriptor2',flipud(corners1.Location),flipud(corners2.Location));
+%寻找特征点匹配对
 matches = findmatches(Descriptor1', Descriptor2',corners1.Location,corners2.Location);
 
 [m1,n1] = size(I1);

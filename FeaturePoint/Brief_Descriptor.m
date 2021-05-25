@@ -5,13 +5,13 @@ size_y = size(img,2);
 img2 = GaussianFilter(img);
 center = floor(size(img2)./2);%图片中心
 numFP = size(FP,2);
-run('sampling_param.m') %包含采样点信息
+run('sampling_param.m') %包含采样点信�?
 
 Descriptor = zeros(256,numFP,'logical');
 angle = zeros(1,numFP);
 
 for i = 1:numFP
-    %对于任意一个特征点
+    %对于任意�?个特征点
     img_range = img2(max(FP(1,i)-15,1):min(FP(1,i)+15,size_x),...
         max(FP(2,i)-15,1):min(FP(2,i)+15,size_y));
     [x,y] = getcenter(img_range);

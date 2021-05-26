@@ -1,4 +1,4 @@
-function []=CameraDistortionProcess(imgDir1,imgDir2,imgDir3)
+function [cameraParams]=CameraDistortionProcess(imgDir1,imgDir2,imgDir3)
 % imgDir1='.\Figure_Test_BeforeCalibration\';
 % imgDir2='.\\Figure_Test_BeforeCalibration\\%s';
 % imgDir3='.\\Figure_Test_AfterCalibration\\%s';

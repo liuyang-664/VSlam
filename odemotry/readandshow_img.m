@@ -1,6 +1,6 @@
 clear;clc;
 %储存图像数据路径
-video_path = 'E:\dataset\ethdataset\video';
+video_path = 'D:\matlab\mycode\Junior_Spring\MatlabCourse\VSLAM\ethdataset\video';
 %读取cam0图像的名称
 file_id = fopen([video_path,'\mav0\cam0\data.csv']);
 img_name_data = textscan(file_id, '%s%s', 'Delimiter', ',', 'HeaderLines', 1 );

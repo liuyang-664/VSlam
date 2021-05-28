@@ -11,8 +11,7 @@ Cam1toIMU=[0.0125552670891, -0.999755099723, 0.0182237714554, -0.0198435579556
          0.999598781151, 0.0130119051815, 0.0251588363115, 0.0453689425024
         -0.0253898008918, 0.0179005838253, 0.999517347078, 0.00786212447038
          0.0, 0.0, 0.0, 1.0];
-% Cam0toIMU stands for the coordinate transformation matrix from Cam0 to
-% IMU
+% Cam0toIMU stands for the coordinate transformation matrix from Cam0 to IMU
 B=sqrt((Cam0toIMU(1,4)-Cam1toIMU(1,4))^2+(Cam0toIMU(2,4)-Cam1toIMU(2,4))^2+(Cam0toIMU(3,4)-Cam1toIMU(3,4))^2);
 Cam0Intr=[458.654,457.296,367.215,248.375];
 Cam1Intr=[457.587,456.134,379.999,255.238];

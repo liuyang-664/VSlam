@@ -1,4 +1,4 @@
-function matches = findmatches_BF(des1, des2,corner1,corner2)
+function [matchedPoints1 matchedPoints2] = findmatches_BF(des1, des2,corner1,corner2)
 %des是img的描述子，大小为n*256，采用二进制描述子
 %corner是特征点的像素坐标，大小为n*2
 n = size(des1,1);
@@ -80,5 +80,7 @@ end
 
 % 删除未匹配到的元素
 filter = find(matches(:,1));
-matches = matches(filter,:); %match中前两列为img1的特征点坐标，后两列为匹配到的img2的特征点坐标
+matchedPoints1 = matches(filter,1:2); %the coordinate of feature corrner in img1
+matchedPoints2 = matches(filter,3:4); %the coordinate of feature corrner in img2
+
 end

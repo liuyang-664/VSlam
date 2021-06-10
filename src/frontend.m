@@ -21,22 +21,18 @@ if ~isempty(frameF_prev)
 % 	loop_closing();
 else
 	% Initialize
-    tempPoints = detectFASTFeatures(frameF_curr);
-    points = tempPoints.selectStrongest(Params.strongNum);
-    points = points.Location;
-    descriptors = Brief_Descriptor(frameF_curr,flipud(points'));
-% 	[descriptors, points] = extract_features(frame_curr);
+    [points, features] = ExtractFeatures(frameF_curr);
 
 %     bow = calc_bow_repr(descriptors, Params.kdtree, Params.numCodewords);
 
 	Map.covisibilityGraph = addView(Map.covisibilityGraph, 1, 'Points', points, ...
-		'Orientation', eye(3), 'Location', zeros(1, 3));   % delete the bow
+		'Orientation', eye(3), 'Location', single(zeros(1, 3)));   % delete the bow
 %     Map.covisibilityGraph = addView(Map.covisibilityGraph, 1,...
 %     descriptors, points, bow, 'Points', points, ...
 %     'Orientation', eye(3), 'Location', zeros(1, 3));  %the original code of Michigan 
 
 end
 
-	frameF_prev = frameL_curr;
+	frameF_prev = frameF_curr;
     frameS_prev = frameS_curr;
 end

@@ -1,48 +1,79 @@
-function features_curr = odometer(frameF_prev, frameF_curr, frameS_prev, frameS_curr, k)
+function featuresF_curr = odometer(frameF_prev, frameF_curr, frameS_prev, frameS_curr, k)
 
 global Map
 global State
 global Params
 global Debug
 
-tempPoints = detectFASTFeatures(frameF_prev);
-validPoints_prev = tempPoints.selectStrongest(Params.strongNum);
-validPoints_prev = validPoints_prev.Location;
-features_prev = Brief_Descriptor(frameF_prev,flipud(validPoints_prev'));
+[PointsF_prev ,featuresF_prev] = ExtractFeatures(frameF_prev);
+[PointsF_curr, featuresF_curr] = ExtractFeatures(frameF_curr);
 
-tempPoints = detectFASTFeatures(frameF_curr);
-validPoints_curr = tempPoints.selectStrongest(Params.strongNum);
-validPoints_curr = validPoints_curr.Location;
-features_curr = Brief_Descriptor(frameF_prev,flipud(validPoints_curr'));
+matchedIdx1 = findmatches(featuresF_prev', featuresF_curr');
 
-[matchedPoints1 matchedPoints2] = findmatches(features_prev', features_curr',validPoints_prev, validPoints_curr);
+matchedPoints1 = PointsF_prev(matchedIdx1(:, 1), :);
+matchedPoints2 = PointsF_curr(matchedIdx1(:, 2), :);
 
-% matchedPoints1_camera =  Pixel_to_Camera(matchedPoints1, Points_pix2);
-% matchedPoints2_camera1 =  Pixel_to_Camera(matchedPoints2, Points_pix2);
+%for the depth calculation, match the left and right image
+[PointsS_prev, featuresS_prev] = ExtractFeatures(frameS_prev);
+[PointsS_curr, featuresS_curr] = ExtractFeatures(frameS_curr);
+matchedIdx2 = findmatches(featuresF_prev', featuresS_prev');
+matchedIdx3 = findmatches(featuresF_curr', featuresS_curr');
 
+matchedPointsFS1 = PointsF_prev(matchedIdx2(:, 1), :);
+matchedPointsFS2 = PointsS_prev(matchedIdx2(:, 2), :);
+matchedPointsFS3 = PointsF_curr(matchedIdx3(:, 1), :);
+matchedPointsFS4 = PointsF_prev(matchedIdx3(:, 2), :);
 
-% Map.covisibilityGraph = addConnection(Map.covisibilityGraph, k - 1, k, ...
-%     'Matches', matchedIdx(inlierIdx,:), ...
-%     'Orientation', relativeOrient, ...
-%     'Location', relativeLoc);
-% 
-% orientation = relativeOrient * orient_km1;
-% location = loc_km1 + relativeLoc * orient_km1;
-% 
-% [U, ~, V] = svd(orientation);
-% orientation = U * V';
-% 
-% Map.covisibilityGraph = updateView(Map.covisibilityGraph, k, ...
-%     'Orientation', orientation, 'Location', location);
-% 
-% % Connect every past view to the current view
-% for i = max(k - Params.numViewsToLookBack, 1):k-2
-%     try
-%         connect_views(i, k, Params.minMatchesForConnection)
-%     catch
-%         % warning('Could not find enough inliers between view %d and %d.', i, k)
-%     end
-% end
+Points1_camera = pixel2Camera(matchedPointsFS1, matchedPointsFS2);
+Points2_camera = pixel2Camera(matchedPointsFS3, matchedPointsFS4);
+
+matchedPoints1_camera = [];
+matchedPoints2_camera = [];
+for i = 1:size(matchedIdx1,1)
+    a = matchedIdx1(i, 1);
+    b = matchedIdx1(i, 2);
+    find_a = find(matchedIdx2(:,1) == a, 1);
+    find_b = find(matchedIdx3(:,1) == b, 1);
+    if isempty(find_a) || isempty(find_b)
+        continue;
+    else
+        matchedPoints1_camera = [matchedPoints1_camera; Points1_camera(find_a, :)];
+        matchedPoints2_camera = [matchedPoints2_camera; Points2_camera(find_b, :)];
+    end
+end
+
+[relativeOrient, relativeLoc] = ICP_SVDMethod(matchedPoints1_camera, matchedPoints2_camera);
+
+% bow = calc_bow_repr(features_curr, Params.kdtree, Params.numCodewords);
+
+Map.covisibilityGraph = addView(Map.covisibilityGraph, k, ...
+    'Points', PointsF_prev);
+
+pose_km1 = poses(Map.covisibilityGraph, k - 1);
+orient_km1 = pose_km1.Orientation{1};
+loc_km1 = pose_km1.Location{1};
+
+Map.covisibilityGraph = addConnection(Map.covisibilityGraph, k - 1, k, ...
+    'Orientation', relativeOrient, ...
+    'Location', relativeLoc);
+
+orientation = relativeOrient * orient_km1;
+location = loc_km1 + relativeLoc * orient_km1;
+
+[U, ~, V] = svd(orientation);
+orientation = U * V';
+
+Map.covisibilityGraph = updateView(Map.covisibilityGraph, k, ...
+    'Orientation', orientation, 'Location', location);
+
+% Connect every past view to the current view
+for i = max(k - Params.numViewsToLookBack, 1):k-2
+    try
+        connect_views(i, k, Params.minMatchesForConnection)
+    catch
+        % warning('Could not find enough inliers between view %d and %d.', i, k)
+    end
+end
 
 % local BA
 %{

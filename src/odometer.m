@@ -1,75 +1,48 @@
-function features_curr = odometer(frame_prev, frame_curr,k)
+function features_curr = odometer(frameF_prev, frameF_curr, frameS_prev, frameS_curr, k)
 
 global Map
 global State
 global Params
 global Debug
 
-% [features_prev, validPoints_prev] = extract_features(frame_prev);
-% [features_curr, validPoints_curr] = extract_features(frame_curr);
-
-tempPoints = detectFASTFeatures(frame_prev);
+tempPoints = detectFASTFeatures(frameF_prev);
 validPoints_prev = tempPoints.selectStrongest(Params.strongNum);
 validPoints_prev = validPoints_prev.Location;
-features_prev = Brief_Descriptor(frame_prev,flipud(validPoints_prev'));
+features_prev = Brief_Descriptor(frameF_prev,flipud(validPoints_prev'));
 
-tempPoints = detectFASTFeatures(frame_curr);
+tempPoints = detectFASTFeatures(frameF_curr);
 validPoints_curr = tempPoints.selectStrongest(Params.strongNum);
 validPoints_curr = validPoints_curr.Location;
-features_curr = Brief_Descriptor(frame_prev,flipud(validPoints_curr'));
-
-% matchedIdx = matchFeatures(features_prev, features_curr, 'Unique', true, ...
-%     'Method', 'Approximate', 'MatchThreshold', .8);
-% 
-% matchedPoints1 = validPoints_prev(matchedIdx(:, 1));
-% matchedPoints2 = validPoints_curr(matchedIdx(:, 2));
+features_curr = Brief_Descriptor(frameF_prev,flipud(validPoints_curr'));
 
 [matchedPoints1 matchedPoints2] = findmatches(features_prev', features_curr',validPoints_prev, validPoints_curr);
 
-[relativeOrient, relativeLoc, inlierIdx, status] = estimate_relative_motion(...
-    matchedPoints1, matchedPoints2, Params.cameraParams);
+% matchedPoints1_camera =  Pixel_to_Camera(matchedPoints1, Points_pix2);
+% matchedPoints2_camera1 =  Pixel_to_Camera(matchedPoints2, Points_pix2);
 
-bow = calc_bow_repr(features_curr, Params.kdtree, Params.numCodewords);
-%k = Map.covisibilityGraph.NumViews + 1;
-Map.covisibilityGraph = addView(Map.covisibilityGraph, k, ...
-    features_curr, validPoints_curr, ...
-    bow, 'Points', validPoints_curr);
 
-pose_km1 = poses(Map.covisibilityGraph, k - 1);
-orient_km1 = pose_km1.Orientation{1};
-loc_km1 = pose_km1.Location{1};
-
-if status == 1 && Map.covisibilityGraph.NumViews > 2
-    pose_km2 = poses(Map.covisibilityGraph, k - 2);
-    orient_km2 = pose_km2.Orientation{1};
-    loc_km2 = pose_km2.Location{1};
-    
-    relativeOrient = orient_km1 * orient_km2';
-    relativeLoc = (loc_km1 - loc_km2) * orient_km2';
-end
-
-Map.covisibilityGraph = addConnection(Map.covisibilityGraph, k - 1, k, ...
-    'Matches', matchedIdx(inlierIdx,:), ...
-    'Orientation', relativeOrient, ...
-    'Location', relativeLoc);
-
-orientation = relativeOrient * orient_km1;
-location = loc_km1 + relativeLoc * orient_km1;
-
-[U, ~, V] = svd(orientation);
-orientation = U * V';
-
-Map.covisibilityGraph = updateView(Map.covisibilityGraph, k, ...
-    'Orientation', orientation, 'Location', location);
-
-% Connect every past view to the current view
-for i = max(k - Params.numViewsToLookBack, 1):k-2
-    try
-        connect_views(i, k, Params.minMatchesForConnection)
-    catch
-        % warning('Could not find enough inliers between view %d and %d.', i, k)
-    end
-end
+% Map.covisibilityGraph = addConnection(Map.covisibilityGraph, k - 1, k, ...
+%     'Matches', matchedIdx(inlierIdx,:), ...
+%     'Orientation', relativeOrient, ...
+%     'Location', relativeLoc);
+% 
+% orientation = relativeOrient * orient_km1;
+% location = loc_km1 + relativeLoc * orient_km1;
+% 
+% [U, ~, V] = svd(orientation);
+% orientation = U * V';
+% 
+% Map.covisibilityGraph = updateView(Map.covisibilityGraph, k, ...
+%     'Orientation', orientation, 'Location', location);
+% 
+% % Connect every past view to the current view
+% for i = max(k - Params.numViewsToLookBack, 1):k-2
+%     try
+%         connect_views(i, k, Params.minMatchesForConnection)
+%     catch
+%         % warning('Could not find enough inliers between view %d and %d.', i, k)
+%     end
+% end
 
 % local BA
 %{

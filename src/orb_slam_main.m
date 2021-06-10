@@ -5,14 +5,16 @@ addpath(genpath('.'));
 %% User setup
 
 isPlot = true;
-
 sequence = 0;
+image = 0; %0代表用image_0的数据来计算视觉里程计，1代表用image_1的数据计算视觉里程计
 
-imageDir = ['..\dataset' filesep 'test' filesep num2str(sequence,'%02d') filesep 'image_0'];
+imageDir1 = ['..\dataset' filesep 'test' filesep num2str(sequence,'%02d') filesep 'image_0'];
+imageDir2 = ['..\dataset' filesep 'test' filesep num2str(sequence,'%02d') filesep 'image_1'];
 imageExt = '.png';
 
 calibFile = ['..\dataset' filesep 'test' filesep num2str(sequence,'%02d') filesep 'calib.txt'];
-cameraID = 0;
+cameraID1 = 0;
+cameraID2 = 1;
 
 codewords = load(['..\dataset' filesep 'codewords.mat']);
 codewords = codewords.codewords;
@@ -39,7 +41,8 @@ State.mu = [0;0;0];
 State.Sigma = zeros(length(State.mu));
 
 global Params;
-Params.cameraParams = load_cameraParams(calibFile, cameraID);
+Params.cameraParams1 = load_cameraParams(calibFile, cameraID1);
+Params.cameraParams2 = load_cameraParams(calibFile, cameraID2);
 Params.numSkip = 2;
 Params.kdtree = KDTreeSearcher(codewords);
 Params.numCodewords = size(codewords, 1);
@@ -52,23 +55,33 @@ Debug.displayFeaturesOnImages = false;
 
 %% Run ORB-SLAM
 
-imagesFiles = dir([imageDir, filesep, '*', imageExt]);
-framesToConsider = 1:Params.numSkip:length(imagesFiles);
-frames = cell([1 length(framesToConsider)]);
+images_Left = dir([imageDir1, filesep, '*', imageExt]);
+images_Right = dir([imageDir2, filesep, '*', imageExt]);
+framesToConsider = 1:Params.numSkip:30;
+frames_Left = cell([1 length(framesToConsider)]);
+frames_Right = frames_Left;
 for i = 1:length(framesToConsider)
 	frameIdx = framesToConsider(i);
-	frames{i} = imread([imagesFiles(frameIdx).folder, filesep, imagesFiles(frameIdx).name]);
+	frames_Left{i} = imread([images_Left(frameIdx).folder, filesep, images_Left(frameIdx).name]);
+    frames_Right{i} = imread([images_Right(frameIdx).folder, filesep, images_Right(frameIdx).name]);
 end
 
 for i = 1:length(framesToConsider)
 
-	if iscell(frames)
-		frame = frames{i};
+	if iscell(frames_Left)
+		frame_Left = frames_Left{i};
+        frame_Right = frames_Right{i};
 	else
-		frame = frames(i);
-	end
-
-	frontend(frame,i);
+		frame_Left = frames_Left(i);
+        frame_Right = frames_Right(i);
+    end
+    
+    %image == 0 means use the data in image_0 to calculate visual odometery
+    if image == 0
+        frontend(frame_Left,frame_Right,i);
+    else
+        frontend(frame_Right,frame_Left,i);
+    end	
 
     fprintf('Sequence %02d [%4d/%4d]\n', ...
         sequence, i, length(framesToConsider))

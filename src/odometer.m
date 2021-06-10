@@ -22,7 +22,7 @@ matchedIdx3 = findmatches(featuresF_curr', featuresS_curr');
 matchedPointsFS1 = PointsF_prev(matchedIdx2(:, 1), :);
 matchedPointsFS2 = PointsS_prev(matchedIdx2(:, 2), :);
 matchedPointsFS3 = PointsF_curr(matchedIdx3(:, 1), :);
-matchedPointsFS4 = PointsF_prev(matchedIdx3(:, 2), :);
+matchedPointsFS4 = PointsS_curr(matchedIdx3(:, 2), :);
 
 Points1_camera = pixel2Camera(matchedPointsFS1, matchedPointsFS2);
 Points2_camera = pixel2Camera(matchedPointsFS3, matchedPointsFS4);
@@ -42,12 +42,12 @@ for i = 1:size(matchedIdx1,1)
     end
 end
 
-[relativeOrient, relativeLoc] = ICP_SVDMethod(matchedPoints1_camera, matchedPoints2_camera);
+[relativeOrient, relativeLoc] = ICP_SVDMethod(matchedPoints2_camera, matchedPoints1_camera);
 
 % bow = calc_bow_repr(features_curr, Params.kdtree, Params.numCodewords);
 
 Map.covisibilityGraph = addView(Map.covisibilityGraph, k, ...
-    'Points', PointsF_prev);
+    'Points', PointsF_curr);
 
 pose_km1 = poses(Map.covisibilityGraph, k - 1);
 orient_km1 = pose_km1.Orientation{1};

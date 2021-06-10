@@ -46,9 +46,9 @@ Params.cameraParams2 = load_cameraParams(calibFile, cameraID2);
 Params.numSkip = 2;
 Params.kdtree = KDTreeSearcher(codewords);
 Params.numCodewords = size(codewords, 1);
-Params.strongNum = 50;
+Params.strongNum = 500;
 Params.numViewsToLookBack = 5;
-Params.maxZ = 5000;
+Params.maxZ = 50;
 
 
 global Debug;
@@ -59,7 +59,7 @@ Debug.displayFeaturesOnImages = false;
 
 images_Left = dir([imageDir1, filesep, '*', imageExt]);
 images_Right = dir([imageDir2, filesep, '*', imageExt]);
-framesToConsider = 1:Params.numSkip:100;
+framesToConsider = 1:Params.numSkip:500;
 frames_Left = cell([1 length(framesToConsider)]);
 frames_Right = frames_Left;
 for i = 1:length(framesToConsider)

@@ -2,7 +2,6 @@ clear;
 close all;
 clc;
 addpath(genpath('.'));
-strong_num = 50;
 
 I01=imread('../dataset/test/00/image_0/000000.png');
 I02=imread('../dataset/test/00/image_0/000002.png');

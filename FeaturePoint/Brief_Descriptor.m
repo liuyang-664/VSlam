@@ -7,7 +7,7 @@ center = floor(size(img2)./2);%图片中心
 numFP = size(FP,2);
 run('sampling_param.m') %包含采样点信�?
 
-Descriptor = zeros(256,numFP,'logical');
+Descriptor = zeros(256,numFP);
 angle = zeros(1,numFP);
 
 for i = 1:numFP

@@ -8,9 +8,9 @@ global Params
 K = Params.cameraParams1.IntrinsicMatrix;
 fx1 = K(1,1);
 fx2 =  Params.cameraParams2.IntrinsicMatrix(1,1);
-b = 0.11007784;
+b = 0.2;
 d = abs(Points_pix1(:,1)-Points_pix2(:,1));
-Z = (fx1+fx2)/2 ./ d;
+Z = (fx1+fx2)/2 * b ./ d;
 
 idx = find(d<1);
 Z(idx) = Params.maxZ;

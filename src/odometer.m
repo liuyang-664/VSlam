@@ -46,7 +46,7 @@ end
 
 % bow = calc_bow_repr(features_curr, Params.kdtree, Params.numCodewords);
 
-Map.covisibilityGraph = addView(Map.covisibilityGraph, k, ...
+Map.covisibilityGraph = addView(Map.covisibilityGraph, k, Points2_camera, ...
     'Points', PointsF_curr);
 
 pose_km1 = poses(Map.covisibilityGraph, k - 1);

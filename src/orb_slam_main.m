@@ -8,16 +8,16 @@ isPlot = true;
 sequence = 0;
 image = 0; %0代表用image_0的数据来计算视觉里程计，1代表用image_1的数据计算视觉里程计
 
-imageDir1 = ['..\dataset' filesep 'test' filesep num2str(sequence,'%02d') filesep 'image_0'];
-imageDir2 = ['..\dataset' filesep 'test' filesep num2str(sequence,'%02d') filesep 'image_1'];
+imageDir1 = 'D:\matlab\mycode\Junior_Spring\MatlabCourse\VSLAM\SeveralDataSet\kitti\dataset\00\image_0';
+imageDir2 = 'D:\matlab\mycode\Junior_Spring\MatlabCourse\VSLAM\SeveralDataSet\kitti\dataset\00\image_1';
 imageExt = '.png';
 
-calibFile = ['..\dataset' filesep 'test' filesep num2str(sequence,'%02d') filesep 'calib.txt'];
+calibFile = 'D:\matlab\mycode\Junior_Spring\MatlabCourse\VSLAM\SeveralDataSet\kitti\dataset\00\calib.txt';
 cameraID1 = 0;
 cameraID2 = 1;
 
-codewords = load(['..\dataset' filesep 'codewords.mat']);
-codewords = codewords.codewords;
+% codewords = load(['..\dataset' filesep 'codewords.mat']);
+% codewords = codewords.codewords;
 
 
 %% Get feature vocabulary
@@ -34,18 +34,18 @@ codewords = codewords.codewords;
 %% Setup Global variables
 
 global Map;
-Map.covisibilityGraph = viewSet();
+Map.covisibilityGraph = myViewSet();
 
-global State;
-State.mu = [0;0;0];
-State.Sigma = zeros(length(State.mu));
+% global State;
+% State.mu = [0;0;0];
+% State.Sigma = zeros(length(State.mu));
 
 global Params;
 Params.cameraParams1 = load_cameraParams(calibFile, cameraID1);
 Params.cameraParams2 = load_cameraParams(calibFile, cameraID2);
 Params.numSkip = 2;
-Params.kdtree = KDTreeSearcher(codewords);
-Params.numCodewords = size(codewords, 1);
+% Params.kdtree = KDTreeSearcher(codewords);
+% Params.numCodewords = size(codewords, 1);
 Params.strongNum = 500;
 Params.numViewsToLookBack = 5;
 Params.maxZ = 50;
@@ -59,7 +59,7 @@ Debug.displayFeaturesOnImages = false;
 
 images_Left = dir([imageDir1, filesep, '*', imageExt]);
 images_Right = dir([imageDir2, filesep, '*', imageExt]);
-framesToConsider = 1:Params.numSkip:500;
+framesToConsider = 1:Params.numSkip:length(images_Left);
 frames_Left = cell([1 length(framesToConsider)]);
 frames_Right = frames_Left;
 for i = 1:length(framesToConsider)

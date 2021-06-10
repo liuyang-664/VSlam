@@ -21,11 +21,17 @@ if ~isempty(frameF_prev)
 % 	loop_closing();
 else
 	% Initialize
-    [points, features] = ExtractFeatures(frameF_curr);
+    [pointsF, featuresF] = ExtractFeatures(frameF_curr);
+    [pointsS, featuresS] = ExtractFeatures(frameS_curr);
+    matchedIdx = findmatches(featuresF', featuresS');
+    
+    matchedPointsF = pointsF(matchedIdx(:,1), :);
+    matchedPointsS = pointsS(matchedIdx(:,2), :);
+    pointsF_Camera = pixel2Camera(matchedPointsF, matchedPointsS);
 
 %     bow = calc_bow_repr(descriptors, Params.kdtree, Params.numCodewords);
 
-	Map.covisibilityGraph = addView(Map.covisibilityGraph, 1, 'Points', points, ...
+	Map.covisibilityGraph = addView(Map.covisibilityGraph, 1, pointsF_Camera, 'Points', pointsF, ...
 		'Orientation', eye(3), 'Location', single(zeros(1, 3)));   % delete the bow
 %     Map.covisibilityGraph = addView(Map.covisibilityGraph, 1,...
 %     descriptors, points, bow, 'Points', points, ...

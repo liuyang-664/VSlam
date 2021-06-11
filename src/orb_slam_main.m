@@ -59,8 +59,10 @@ Debug.displayFeaturesOnImages = false;
 
 images_Left = dir([imageDir1, filesep, '*', imageExt]);
 images_Right = dir([imageDir2, filesep, '*', imageExt]);
+
 % framesToConsider = 1:Params.numSkip:length(images_Left);
 framesToConsider = 1:Params.numSkip:30;
+
 frames_Left = cell([1 length(framesToConsider)]);
 frames_Right = frames_Left;
 for i = 1:length(framesToConsider)
@@ -97,14 +99,28 @@ save([num2str('../data/seq%02d'), ...
 
 if isPlot
     camPoses = poses(Map.covisibilityGraph);
-	figure
-	hold on
 	traj = cell2mat(camPoses.Location);
     x = traj(:, 1);
     z = traj(:, 3);
-    plot(x, z, 'x-')
-    axis equal
-	grid on
+    la = 6;
+    triangle = [-la/2, 1, -sqrt(3)/6 * la;
+        la/2, 1, -sqrt(3)/6 * la;
+        0, 1, sqrt(3)/3 * la];
+    for i = 1:4:length(framesToConsider)
+        plot(x, z, 'b', 'LineWidth',1.5);
+        hold on;
+        pose = camPoses.Orientation{i};
+        trianglek = triangle * pose + traj(i, :);
+        plot([trianglek(:,1); trianglek(1,1)], [trianglek(:,3); trianglek(1,3)], 'r', 'LineWidth',1);
+        xlabel('$x/m$','Interpreter','latex');
+        ylabel('$z/m$','Interpreter','latex');
+        title('The track of camera');
+        axis equal
+        grid on
+    end
+    hold off;
+    
+    
 
     %{
 	validIdx = sqrt(xyzPoints(:, 1).^2 + xyzPoints(:, 2).^2 + xyzPoints(:, 3).^2) < 100;
@@ -116,9 +132,8 @@ if isPlot
 
     %validIdx = sqrt(xyzPoints(:, 1).^2 + xyzPoints(:, 2).^2 + xyzPoints(:, 3).^2) < 500;
     %scatter(xyzPoints(validIdx, 1), xyzPoints(validIdx, 3), '.')
-	hold off;
 end
 
 % optimize_graph;
 
-rmpath(genpath('.'));
+%rmpath(genpath('.'));

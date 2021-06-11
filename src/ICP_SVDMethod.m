@@ -30,7 +30,8 @@ if det(R) < 0
     R = -R;
 end
 
-t = p2_mean' - R*p1_mean';
+t = zeros(3, 1);
+t(1:3) = p2_mean' - R*p1_mean';
 
 R = R';
 t = t';

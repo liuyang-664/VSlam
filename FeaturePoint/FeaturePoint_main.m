@@ -22,12 +22,12 @@ matchedDescriptor1 = Descriptor01(:, matchedIdx1(:,1));
 matchedPoints2 = Points02(matchedIdx1(:,2), :);
 matchedDescriptor2 = Descriptor02(:, matchedIdx1(:,2));
 
-matchedIdx2 = findmatches(matchedDescriptor1', Descriptor11');
-matchedIdx3 = findmatches(matchedDescriptor2', Descriptor12');
-filter = intersect(matchedIdx2(:,1), matchedIdx3(:,1));
-
-matchedPoints1 = matchedPoints1(filter,:);
-matchedPoints2 = matchedPoints2(filter,:);
+% matchedIdx2 = findmatches(matchedDescriptor1', Descriptor11');
+% matchedIdx3 = findmatches(matchedDescriptor2', Descriptor12');
+% filter = intersect(matchedIdx2(:,1), matchedIdx3(:,1));
+% 
+% matchedPoints1 = matchedPoints1(filter,:);
+% matchedPoints2 = matchedPoints2(filter,:);
 
 [m1,n1] = size(I01);
 [m2,n2] = size(I02);
@@ -42,7 +42,7 @@ scatter(matchedPoints2(:,1)+n1,matchedPoints2(:,2),'gx');
 % scatter(0,0,'rx');
 % plot([0 0], [0, 100], 'b','linewidth',1.5 ); %test Image coordinate
 % system
-for i =1:size(filter,1)
+for i =1:size(matchedPoints1,1)
     plot([matchedPoints1(i,1),matchedPoints2(i,1)+n1],[matchedPoints1(i,2),matchedPoints2(i,2)],...
         'linewidth',1.5);
 end

@@ -1,7 +1,7 @@
 %extract FAST features and calculate BRIEF descriptor
 function [validPoints, features] = ExtractFeatures(image)
 
-strongNum = 500;
+strongNum = 100;
 tempPoints = detectFASTFeatures(image);
 validPoints = tempPoints.selectStrongest(strongNum);
 validPoints = validPoints.Location;

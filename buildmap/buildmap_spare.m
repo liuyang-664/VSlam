@@ -1,28 +1,36 @@
 clear;clc;
+% load Map03_2271images_kitti.mat
+load Map01_850images_ethdataSet.mat
+Map03_2271images = Map01_850images_ethdataset;
+%%
 %R:rot matrix from camera to ground
 %t:trans matrix from camera to ground
 %FP_cam_pos:feature point postion in camera coordinate system
-n = 100;
-FP_pos = zeros(3,n);
+
+% n = 2270;
+n = 850
+FP_pos = [];
 for i = 1:n
-    R = eye(3);
-    t = [1;1;1];
-    FP_cam_pos = [1;2;3];
-    FP_pos(:,i) = R*FP_cam_pos+t;
+    FP_cam_pos =  Map03_2271images.PointsCamera{1,i};
+    m = size(FP_cam_pos,1);
+    temp = zeros(m,3);%当前特征点位置
+    
+    for j = 1:m
+        R = Map03_2271images.Views.Orientation{j};
+        t = Map03_2271images.Views.Location{j};
+        temp(j,:) = (R*FP_cam_pos(j,:)' + t')';
+    end
+    FP_pos = [FP_pos;temp];
 end
-
-
-
-% function FP_pos = get_FP_pos(R,t,FP_cam_pos)
-% %R:rot matrix from camera to ground
-% %t:trans matrix from camera to ground
-% %FP_cam_pos:feature point postion in camera coordinate system
-% 
-% % t = reshape(t,[3,1]);
-% % FP_cam_pos = reshape(FP_cam_pos,[3,1]);
-% % T = [R t;0 0 01];
-% % pos_cam = [FP_cam_pos;1];
-% % pos_ground = T*pos_cam;
-% % FP_pos = pos_ground(1:3);
-% FP_pos = R*FP_cam_pos+t;
-% end
+%%
+ptCloud = pointCloud(FP_pos);
+% cmatrix = ones(size(ptCloud.Location)).*[1 0.5 0]; %颜色矩阵
+% ptCloud = pointCloud(FP_pos,'Color',cmatrix);
+pcshow(ptCloud)
+hold on
+temp = cell2mat(Map03_2271images.Views.Location);
+temp(:,3) = 60;
+ptCloud2 = pointCloud(temp);
+cmatrix = ones(size(ptCloud2.Location)).*[1 0.5 0]; %颜色矩阵
+ptCloud2 = pointCloud(temp,'Color',cmatrix);
+pcshow(ptCloud2)

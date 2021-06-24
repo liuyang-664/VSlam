@@ -8,11 +8,11 @@ isPlot = true;
 sequence = 0;
 image = 0; %0代表用image_0的数据来计算视觉里程计，1代表用image_1的数据计算视觉里程计
 
-imageDir1 = 'D:\matlab\mycode\Junior_Spring\MatlabCourse\VSLAM\SeveralDataSet\kitti\dataset\00\image_0';
-imageDir2 = 'D:\matlab\mycode\Junior_Spring\MatlabCourse\VSLAM\SeveralDataSet\kitti\dataset\00\image_1';
+imageDir1 = 'E:\dataset\dataset\sequences\00\image_0';
+imageDir2 = 'E:\dataset\dataset\sequences\00\image_1';
 imageExt = '.png';
 
-calibFile = 'D:\matlab\mycode\Junior_Spring\MatlabCourse\VSLAM\SeveralDataSet\kitti\dataset\00\calib.txt';
+calibFile = 'E:\dataset\dataset\sequences\00\calib.txt';
 cameraID1 = 0;
 cameraID2 = 1;
 
@@ -59,7 +59,9 @@ Debug.displayFeaturesOnImages = false;
 
 images_Left = dir([imageDir1, filesep, '*', imageExt]);
 images_Right = dir([imageDir2, filesep, '*', imageExt]);
+
 framesToConsider = 1:Params.numSkip:50;  %Length(images_Left)
+
 frames_Left = cell([1 length(framesToConsider)]);
 frames_Right = frames_Left;
 for i = 1:length(framesToConsider)

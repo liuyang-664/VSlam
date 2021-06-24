@@ -1,4 +1,4 @@
-function [matchedPoints1 matchedPoints2] = findmatches_BF(des1, des2,corner1,corner2)
+function matchedIdx = findmatches_BF(des1, des2)
 %des是img的描述子，大小为n*256，采用二进制描述子
 %corner是特征点的像素坐标，大小为n*2
 n = size(des1,1);
@@ -69,18 +69,16 @@ for i = 1:n
     dist2(i,2) = minD2;
 end
 
-matches = zeros(n,4);
-for i = 1:n
+matches = zeros(size(des1,1),2);
+for i = 1:size(des1,1)
     if (dist1(i,1) <= 64 && dist1(i,1)/dist1(i,2) <=0.98 && i == idx2(idx1(i,1),1))
         % hamming distance < 0.25 + ratio between smallest and second
         % smallest < 0.98  and cross minimum value check 
-        matches(i,:) = [corner1(i,:),corner2(idx1(i,1),:)];
+        matches(i,:) = [i, idx1(i,1)];
     end
 end
 
 % 删除未匹配到的元素
-filter = find(matches(:,1));
-matchedPoints1 = matches(filter,1:2); %the coordinate of feature corrner in img1
-matchedPoints2 = matches(filter,3:4); %the coordinate of feature corrner in img2
+matchedIdx = matches(find(matches(:,1) > 0), :);
 
 end

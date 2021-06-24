@@ -1,19 +1,18 @@
 clear;
 close all;
-clc;
 addpath(genpath('.'));
 
-I01=imread('../dataset/test/00/image_0/000000.png');
-I02=imread('../dataset/test/00/image_0/000002.png');
-I11=imread('../dataset/test/00/image_1/000000.png');
-I12=imread('../dataset/test/00/image_1/000002.png');
-% I1=rgb2gray(imread('test1_1.jpg'));
-% I2=rgb2gray(imread('test1_2.jpg'));
+% I01=imread('../dataset/test/00/image_0/000000.png');
+% I02=imread('../dataset/test/00/image_0/000002.png');
+% I11=imread('../dataset/test/00/image_1/000000.png');
+% I12=imread('../dataset/test/00/image_1/000002.png');
+I01=im2gray(imread('test4_1.jpg'));
+I02=im2gray(imread('test4_2.jpg'));
 
 [Points01, Descriptor01] = ExtractFeatures(I01);
 [Points02, Descriptor02] = ExtractFeatures(I02);
-[Points11, Descriptor11] = ExtractFeatures(I11);
-[Points12, Descriptor12] = ExtractFeatures(I12);
+% [Points11, Descriptor11] = ExtractFeatures(I11);
+% [Points12, Descriptor12] = ExtractFeatures(I12);
 
 %寻找特征点匹配对
 matchedIdx1 = findmatches(Descriptor01', Descriptor02');
